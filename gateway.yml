@@ -1,0 +1,25 @@
+spring:
+  application.name: gateway
+  cloud:
+    gateway:
+      default-filters:
+      - PrefixPath=/
+      routes:
+      #================================
+      - id: flashcardOmega              #id can be any names
+        uri: lb://flashcard             #matches the name in application.proerties file at spring.application.name=flashcard
+        predicates:
+        - Path=/flashcard/**
+        filters:
+        - StripPrefix=1
+        - name: CircuitBreaker
+          args:
+            name: flashcard-fallback
+            fallbackUri: forward:/fallback/flashcard
+      #================================
+      - id: quizOmega
+        uri: lb://quiz                  #lb stands for load balanceing
+        predicates:
+        - Path=/quiz/**
+        filters:
+        - StripPrefix=1
